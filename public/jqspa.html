@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="spastyle.css">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <title>A very simple jQuery SPA</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <h1>Car Factory</h1>
+    <div id="buttons">
+        <a onclick="fetch('cars', ['name', 'make_id'])">Cars</a>
+        <a onclick="fetch('makes', ['name', 'country'])">Makes</a>
+        <a onclick="fetch('parts', ['name', 'count'])">  Parts</a>
+    </div>
+
+    <div id="list"></div>
+
+    <script>
+        var fetch = function (which, fields) {
+
+            $("#list").empty();
+            $.get("http://localhost:3000/makes.json", true)
+            .done( makesJson => {
+                $.get("http://localhost:3000/" + which + ".json", true)
+                    .done(json =>{
+                        for (item in json) {
+                            lis = "<li>";
+                            for (field in fields) {
+                                if(fields[field] == 'make_id'){
+                                    for(make in makesJson){
+                                        if(makesJson[make]['id'] == json[item][fields[field]]){
+                                            lis += makesJson[make]['name'] + ""
+                                        }
+                                    }
+                                }
+                                else{
+                                    lis += json[item][fields[field]] + " "
+                                }
+                            }
+                            lis += "</li>";
+                            $("#list").append(lis);
+                        }
+                    })
+                    .fail(function (json) { console.log("fail") })
+                })
+                .fail(json =>{console.log('you suck')})
+            };
+    </script>
+
+</body>
+
+</html>
